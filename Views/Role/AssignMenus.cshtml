@@ -1,0 +1,40 @@
+﻿@using AdminLTEApp.Models
+@model RoleMenuAssignmentViewModel
+@{
+    ViewData["Title"] = "Assign Menus to Role: " + Model.RoleName;
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Assign Menus to Role: @Model.RoleName</h3>
+            </div>
+            <div class="card-body">
+                <form asp-action="AssignMenus" method="post">
+                    <input type="hidden" name="RoleId" value="@Model.RoleId" />
+
+                    <div class="row">
+                        @foreach (var menu in Model.Menus)
+                        {
+                            <div class="col-md-4">
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input" name="Menus[@menu.Id].IsChecked"
+                                           value="true" id="menu_@menu.Id" @(menu.IsChecked ? "checked" : "") />
+                                    <input type="hidden" name="Menus[@menu.Id].Id" value="@menu.Id" />
+                                    <input type="hidden" name="Menus[@menu.Id].Name" value="@menu.Name" />
+                                    <label class="form-check-label" for="menu_@menu.Id">@menu.Name</label>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="form-group mt-3">
+                        <input type="submit" value="Save Assignments" class="btn btn-primary" />
+                        <a asp-controller="Role" asp-action="Index" class="btn btn-secondary">Back to Roles</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

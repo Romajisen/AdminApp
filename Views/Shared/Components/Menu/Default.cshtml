@@ -1,0 +1,37 @@
+@model IEnumerable<AdminLTEApp.Models.Menu>
+
+@foreach (var menu in Model)
+{
+    if (menu.Children.Any())
+    {
+        <li class="nav-item has-treeview">
+            <a href="#" class="nav-link">
+                <i class="nav-icon @menu.Icon"></i>
+                <p>
+                    @menu.Name
+                    <i class="fas fa-angle-left right"></i>
+                </p>
+            </a>
+            <ul class="nav nav-treeview">
+                @foreach (var child in menu.Children.OrderBy(c => c.Order))
+                {
+                    <li class="nav-item">
+                        <a asp-controller="@child.Controller" asp-action="@child.Action" class="nav-link">
+                            <i class="nav-icon @child.Icon"></i>
+                            <p>@child.Name</p>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item">
+            <a asp-controller="@menu.Controller" asp-action="@menu.Action" class="nav-link">
+                <i class="nav-icon @menu.Icon"></i>
+                <p>@menu.Name</p>
+            </a>
+        </li>
+    }
+}

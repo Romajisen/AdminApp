@@ -1,0 +1,76 @@
+@model IEnumerable<AdminLTEApp.Models.Menu>
+@{
+    ViewData["Title"] = "Menu Management";
+}
+
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h3 class="card-title">Menu Management</h3>
+                <div class="card-tools">
+                    <a asp-action="Create" class="btn btn-primary">Add New Menu</a>
+                </div>
+            </div>
+            <div class="card-body">
+                <table class="table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Controller</th>
+                            <th>Action</th>
+                            <th>Icon</th>
+                            <th>Order</th>
+                            <th>Parent</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var menu in Model)
+                        {
+                            <tr>
+                                <td>@menu.Name</td>
+                                <td>@menu.Controller</td>
+                                <td>@menu.Action</td>
+                                <td><i class="@menu.Icon"></i> @menu.Icon</td>
+                                <td>@menu.Order</td>
+                                <td>@(menu.Parent?.Name ?? "None")</td>
+                                <td>
+                                    <span class="badge @(menu.IsActive ? "badge-success" : "badge-danger")">
+                                        @(menu.IsActive ? "Active" : "Inactive")
+                                    </span>
+                                </td>
+                                <td>
+                                    <a asp-action="Edit" asp-route-id="@menu.Id" class="btn btn-primary btn-sm">Edit</a>
+                                    <a asp-action="Delete" asp-route-id="@menu.Id" class="btn btn-danger btn-sm">Delete</a>
+                                </td>
+                            </tr>
+
+                            @foreach (var child in menu.Children.OrderBy(c => c.Order))
+                            {
+                                <tr>
+                                    <td>&nbsp;&nbsp;&nbsp;&nbsp;└ @child.Name</td>
+                                    <td>@child.Controller</td>
+                                    <td>@child.Action</td>
+                                    <td><i class="@child.Icon"></i> @child.Icon</td>
+                                    <td>@child.Order</td>
+                                    <td>@menu.Name</td>
+                                    <td>
+                                        <span class="badge @(child.IsActive ? "badge-success" : "badge-danger")">
+                                            @(child.IsActive ? "Active" : "Inactive")
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <a asp-action="Edit" asp-route-id="@child.Id" class="btn btn-primary btn-sm">Edit</a>
+                                        <a asp-action="Delete" asp-route-id="@child.Id" class="btn btn-danger btn-sm">Delete</a>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
