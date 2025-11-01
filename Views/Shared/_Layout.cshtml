@@ -34,9 +34,11 @@
                             <i class="fas fa-user mr-2"></i> Profile
                         </a>
                         <div class="dropdown-divider"></div>
-                        <a asp-controller="Account" asp-action="Logout" class="dropdown-item">
-                            <i class="fas fa-sign-out-alt mr-2"></i> Logout
-                        </a>
+                        <form asp-controller="Account" asp-action="Logout" method="post" id="logoutForm">
+                            <a href="#" class="dropdown-item" onclick="document.getElementById('logoutForm').submit();">
+                                <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                            </a>
+                        </form>
                     </div>
                 </li>
             </ul>

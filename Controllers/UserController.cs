@@ -25,6 +25,38 @@ namespace AdminLTEApp.Controllers
             return View(users);
         }
 
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(CreateUserViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var user = new ApplicationUser
+                {
+                    UserName = model.Email,
+                    Email = model.Email,
+                    FirstName = model.FirstName,
+                    LastName = model.LastName,
+                    IsActive = true
+                };
+                var result = await _userManager.CreateAsync(user, model.Password);
+                if (result.Succeeded)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
+            }
+            return View(model);
+        }
+
         public async Task<IActionResult> Details(string id)
         {
             if (id == null) return NotFound();
@@ -144,19 +176,21 @@ namespace AdminLTEApp.Controllers
             var user = await _userManager.FindByIdAsync(model.UserId);
             if (user == null) return NotFound();
 
-            // Remove existing user-menu assignments
-            var existingUserMenus = _context.UserMenus.Where(um => um.UserId == model.UserId);
-            _context.UserMenus.RemoveRange(existingUserMenus);
+            var existingUserMenus = await _context.UserMenus
+                .Where(um => um.UserId == model.UserId)
+                .ToListAsync();
+
+            var selectedMenuIds = model.Menus.Where(m => m.IsChecked).Select(m => m.Id).ToList();
+
+            // Remove assignments that are no longer selected
+            var menusToRemove = existingUserMenus.Where(um => !selectedMenuIds.Contains(um.MenuId));
+            _context.UserMenus.RemoveRange(menusToRemove);
 
             // Add new assignments
-            foreach (var menuId in model.Menus.Where(m => m.IsChecked).Select(m => m.Id))
-            {
-                _context.UserMenus.Add(new UserMenu
-                {
-                    UserId = model.UserId,
-                    MenuId = menuId
-                });
-            }
+            var existingMenuIds = existingUserMenus.Select(um => um.MenuId).ToList();
+            var menusToAdd = selectedMenuIds.Where(id => !existingMenuIds.Contains(id))
+                .Select(id => new UserMenu { UserId = model.UserId, MenuId = id });
+            _context.UserMenus.AddRange(menusToAdd);
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(AssignMenus), new { id = model.UserId });

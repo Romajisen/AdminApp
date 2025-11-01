@@ -160,19 +160,21 @@ namespace AdminLTEApp.Controllers
             var role = await _roleManager.FindByIdAsync(model.RoleId);
             if (role == null) return NotFound();
 
-            // Remove existing role-menu assignments
-            var existingRoleMenus = _context.RoleMenus.Where(rm => rm.RoleId == model.RoleId);
-            _context.RoleMenus.RemoveRange(existingRoleMenus);
+            var existingRoleMenus = await _context.RoleMenus
+                .Where(rm => rm.RoleId == model.RoleId)
+                .ToListAsync();
+
+            var selectedMenuIds = model.Menus.Where(m => m.IsChecked).Select(m => m.Id).ToList();
+
+            // Remove assignments that are no longer selected
+            var menusToRemove = existingRoleMenus.Where(rm => !selectedMenuIds.Contains(rm.MenuId));
+            _context.RoleMenus.RemoveRange(menusToRemove);
 
             // Add new assignments
-            foreach (var menuId in model.Menus.Where(m => m.IsChecked).Select(m => m.Id))
-            {
-                _context.RoleMenus.Add(new RoleMenu
-                {
-                    RoleId = model.RoleId,
-                    MenuId = menuId
-                });
-            }
+            var existingMenuIds = existingRoleMenus.Select(rm => rm.MenuId).ToList();
+            var menusToAdd = selectedMenuIds.Where(id => !existingMenuIds.Contains(id))
+                .Select(id => new RoleMenu { RoleId = model.RoleId, MenuId = id });
+            _context.RoleMenus.AddRange(menusToAdd);
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(AssignMenus), new { id = model.RoleId });
