@@ -24,10 +24,13 @@
                         {
                             <div class="col-md-4">
                                 <div class="form-check">
+                                    <input type="hidden" name="Menus[@i].IsChecked" value="false" />
                                     <input type="checkbox" class="form-check-input menu-checkbox" name="Menus[@i].IsChecked"
                                            value="true" id="menu_@Model.Menus[i].Id" @(Model.Menus[i].IsChecked ? "checked" : "") />
                                     <input type="hidden" name="Menus[@i].Id" value="@Model.Menus[i].Id" />
                                     <input type="hidden" name="Menus[@i].Name" value="@Model.Menus[i].Name" />
+                                    <input type="hidden" name="Menus[@i].Controller" value="@Model.Menus[i].Controller" />
+                                    <input type="hidden" name="Menus[@i].Action" value="@Model.Menus[i].Action" />
                                     <label class="form-check-label" for="menu_@Model.Menus[i].Id">@Model.Menus[i].Name</label>
                                 </div>
                             </div>
