@@ -101,19 +101,9 @@ namespace AdminLTEApp.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> Delete(string id)
-        {
-            if (id == null) return NotFound();
-
-            var role = await _roleManager.FindByIdAsync(id);
-            if (role == null) return NotFound();
-
-            return View(role);
-        }
-
-        [HttpPost, ActionName("Delete")]
+        [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<IActionResult> Delete(string id)
         {
             var role = await _roleManager.FindByIdAsync(id);
             if (role != null)

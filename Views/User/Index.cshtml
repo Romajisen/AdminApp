@@ -9,6 +9,9 @@
         <div class="card">
             <div class="card-header">
                 <h3 class="card-title">User List</h3>
+                <div class="card-tools">
+                    <a asp-action="Create" class="btn btn-primary">Create New User</a>
+                </div>
             </div>
             <div class="card-body">
                 <table class="table table-bordered table-striped">
@@ -37,7 +40,9 @@
                                     <a asp-action="Details" asp-route-id="@user.Id" class="btn btn-info btn-sm">Details</a>
                                     <a asp-action="Edit" asp-route-id="@user.Id" class="btn btn-primary btn-sm">Edit</a>
                                     <a asp-action="AssignMenus" asp-route-id="@user.Id" class="btn btn-warning btn-sm">Assign Menus</a>
-                                    <a asp-action="Delete" asp-route-id="@user.Id" class="btn btn-danger btn-sm">Delete</a>
+                                    <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal" data-userid="@user.Id" data-username="@(user.FirstName) @(user.LastName)">
+                                        Delete
+                                    </button>
                                 </td>
                             </tr>
                         }
@@ -47,3 +52,46 @@
         </div>
     </div>
 </div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete user <strong><span id="userName"></span></strong>? This is a soft delete.
+            </div>
+            <div class="modal-footer">
+                <form id="deleteForm" method="post">
+                    @Html.AntiForgeryToken()
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#deleteModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget);
+                var userId = button.data('userid');
+                var userName = button.data('username');
+
+                var modal = $(this);
+                modal.find('#userName').text(userName);
+
+                var form = modal.find('#deleteForm');
+                var action = `@Url.Action("Delete", "User")/${userId}`;
+                form.attr('action', action);
+            });
+        });
+    </script>
+}
