@@ -97,17 +97,9 @@ namespace AdminLTEApp.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> Delete(int id)
-        {
-            var menu = await _context.Menus.FindAsync(id);
-            if (menu == null) return NotFound();
-
-            return View(menu);
-        }
-
-        [HttpPost, ActionName("DeleteConfirmed")]
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> Delete(int id)
         {
             var menu = await _context.Menus.FindAsync(id);
             if (menu != null)

@@ -1,4 +1,4 @@
-﻿@using AdminLTEApp.Models
+@using AdminLTEApp.Models
 @model UserMenuAssignmentViewModel
 @{
     ViewData["Title"] = "Assign Menus to User: " + Model.UserName;
@@ -14,23 +14,24 @@
                 <form asp-action="AssignMenus" method="post">
                     <input type="hidden" name="UserId" value="@Model.UserId" />
 
-                    <div class="row">
+                    <div class="mb-3">
+                        <button type="button" class="btn btn-info btn-sm" id="selectAll">Select All</button>
+                        <button type="button" class="btn btn-secondary btn-sm" id="deselectAll">Deselect All</button>
+                    </div>
 
+                    <div class="row">
                         @for (int i = 0; i < Model.Menus.Count; i++)
                         {
-                            <input type="hidden" name="Menus[@i].Id" value="@Model.Menus[i].Id" />
-                            <input type="hidden" name="Menus[@i].Name" value="@Model.Menus[i].Name" />
-                            <input type="hidden" name="Menus[@i].Controller" value="@Model.Menus[i].Controller" />
-                            <input type="hidden" name="Menus[@i].Action" value="@Model.Menus[i].Action" />
-
-                            <!-- Hidden fallback for unchecked checkbox -->
-                            <input type="hidden" name="Menus[@i].IsChecked" value="false" />
-
-                            <!-- Actual checkbox -->
-                            <input type="checkbox" name="Menus[@i].IsChecked" value="true" @(Model.Menus[i].IsChecked ? "checked" : "") />
-                            <label>@Model.Menus[i].Name</label>
+                            <div class="col-md-4">
+                                <div class="form-check">
+                                    <input type="checkbox" class="form-check-input menu-checkbox" name="Menus[@i].IsChecked"
+                                           value="true" id="menu_@Model.Menus[i].Id" @(Model.Menus[i].IsChecked ? "checked" : "") />
+                                    <input type="hidden" name="Menus[@i].Id" value="@Model.Menus[i].Id" />
+                                    <input type="hidden" name="Menus[@i].Name" value="@Model.Menus[i].Name" />
+                                    <label class="form-check-label" for="menu_@Model.Menus[i].Id">@Model.Menus[i].Name</label>
+                                </div>
+                            </div>
                         }
-
                     </div>
 
                     <div class="form-group mt-3">
@@ -42,3 +43,17 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#selectAll').on('click', function () {
+                $('.menu-checkbox').prop('checked', true);
+            });
+
+            $('#deselectAll').on('click', function () {
+                $('.menu-checkbox').prop('checked', false);
+            });
+        });
+    </script>
+}
